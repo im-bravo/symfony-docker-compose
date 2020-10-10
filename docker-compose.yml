@@ -1,0 +1,32 @@
+version: '2'
+
+networks:
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+services:
+  app:
+    build: ./7.4
+    ports:
+      - '8888:80'
+    volumes:
+      - '${HOST_APP_ROOT}:/var/www/html:cached'
+    depends_on:
+      - redis
+    networks:
+      - frontend
+      - backend
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_AOF_ENABLED=no
+    ports:
+      - '6379:6379'
+    volumes:
+#      - "./redis.conf:/opt/bitnami/redis/etc/redis.conf"
+      - "./.data:/bitnami/redis/data"
+    networks:
+      - backend
